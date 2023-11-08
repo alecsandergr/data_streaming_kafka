@@ -8,6 +8,11 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.11"
+requests = "^2.31.0"
+confluent-kafka = "^2.3.0"
+pyspark = "^3.5.0"
+json5 = "^0.9.14"
+types-requests = "^2.31.0.10"
 
 
 [build-system]
