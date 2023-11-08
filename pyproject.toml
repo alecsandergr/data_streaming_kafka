@@ -2,7 +2,7 @@
 name = "data-streaming-kafka"
 version = "0.1.0"
 description = "Data streaming using Kafka and Airflow"
-authors = ["Alecsander Guimaraes <leelecko@gmail.com>"]
+authors = ["Alecsander Guimaraes <alecsandergr6@gmail.com>"]
 license = "MIT"
 readme = "README.md"
 
