@@ -77,6 +77,7 @@ def get_streaming_dataframe(
             .load()
         )
         logger.info("Streaming dataframe fetched successfully")
+        df.show()
         return df
     except Exception as e:
         logger.warning(f"Failed to fetch streaming dataframe. Error: {e}")
@@ -113,6 +114,7 @@ def transform_streaming_data(df: DataFrame) -> DataFrame:
         .select(from_json(col("value"), schema).alias("data"))
         .select("data.*")
     )
+    transformed_df.show()
     return transformed_df
 
 
