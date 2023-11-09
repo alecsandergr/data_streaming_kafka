@@ -32,7 +32,7 @@ services:
       - ./dags:/opt/airflow/dags
       - ./requirements.txt:/opt/airflow/requirements.txt
     ports:
-      -"8080:8080"
+      - "8080:8080"
     healthcheck:
       test: ["CMD-SHELL", "[ -f /usr/local/airflow/airflow-webserver.pid ]"]
       interval: 30s
@@ -41,7 +41,7 @@ services:
 
   # Zookeeper for Kafka
   kafka_zookeeper:
-    image: confluetinc/cp-zookeeper:latest
+    image: confluentinc/cp-zookeeper:latest
     ports:
       - "2181:2181"
     environment:
@@ -60,7 +60,7 @@ services:
       - KAFKA_BROKER_ID=1
       - KAFKA_ADVERTISED_LISTENERS=INTERNAL://kafka_broker_1:19092,EXTERNAL://${DOCKER_HOST_IP:-127.0.0.1}:9092,DOCKER://host.docker.internal:29092
     
-  kakfa_broker_2:
+  kafka_broker_2:
     extends:
       service: kafka_base
     environment:
@@ -75,7 +75,7 @@ services:
       - KAFKA_ADVERTISED_LISTENERS=INTERNAL://kafka_broker_3:19094,EXTERNAL://${DOCKER_HOST_IP:-127.0.0.1}:9094,DOCKER://host.docker.internal:29094
 
   kafka_base:
-    image: confluetinc/cp-kafka:latest
+    image: confluentinc/cp-kafka:latest
     environment:
       - KAFKA_LISTENER_SECURITY_PROTOCOL_MAP=${KAFKA_LISTENER_SECURITY_PROTOCOL_MAP}
       - KAFKA_INTER_BROKER_LISTENER_NAME=${KAFKA_INTER_BROKER_LISTENER_NAME}
@@ -87,9 +87,33 @@ services:
       - kafka_network
       - default
 
+  # Kafka Connect
+  kafka_connect:
+    image: confluentinc/cp-kafka-connect:latest
+    ports:
+      - "8083:8083"
+    environment:
+      - CONNECT_BOOTSTRAP_SERVERS=${CONNECT_BOOTSTRAP_SERVERS}
+      - CONNECT_REST_PORT=${CONNECT_REST_PORT}
+      - CONNECT_GROUP_ID=${CONNECT_GROUP_ID}
+      - CONNECT_CONFIG_STORAGE_TOPIC=${CONNECT_CONFIG_STORAGE_TOPIC}
+      - CONNECT_OFFSET_STORAGE_TOPIC=${CONNECT_OFFSET_STORAGE_TOPIC}
+      - CONNECT_STATUS_STORAGE_TOPIC=${CONNECT_STATUS_STORAGE_TOPIC}
+      - CONNECT_KEY_CONVERTER=${CONNECT_KEY_CONVERTER}
+      - CONNECT_VALUE_CONVERTER=${CONNECT_VALUE_CONVERTER}
+      - CONNECT_INTERNAL_KEY_CONVERTER=${CONNECT_INTERNAL_KEY_CONVERTER}
+      - CONNECT_INTERNAL_VALUE_CONVERTER=${CONNECT_INTERNAL_VALUE_CONVERTER}
+      - CONNECT_REST_ADVERTISED_HOST_NAME=${CONNECT_REST_ADVERTISED_HOST_NAME}
+      - CONNECT_LOG4J_ROOT_LOGLEVEL=${CONNECT_LOG4J_ROOT_LOGLEVEL}
+      - CONNECT_LOG4J_LOGGERS=${CONNECT_LOG4J_LOGGERS}
+      - CONNECT_PLUGIN_PATH=${CONNECT_PLUGIN_PATH}
+    networks:
+      - kafka_network
+      - default
+
   # Kafka Schema Registry
   kafka_schema_registry:
-    image: confluetinc/cp-schema-registry:latest
+    image: confluentinc/cp-schema-registry:latest
     ports:
       - "8081:8081"
     environment:
@@ -128,7 +152,7 @@ services:
     image: bitnami/spark:3
     container_name: spark_master
     ports:
-      -8085:8080
+      - 8085:8080
     environment:
       - SPARK_UI_PORT=${SPARK_UI_PORT}
       - SPARK_MODE=${SPARK_MODE}
@@ -144,5 +168,5 @@ networks:
   kafka_network:
     driver: bridge
   default:
-    external:
-      name: docker_streaming
+    name: docker_streaming
+    external: true
