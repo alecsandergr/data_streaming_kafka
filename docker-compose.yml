@@ -31,6 +31,8 @@ services:
     volumes:
       - ./dags:/opt/airflow/dags
       - ./requirements.txt:/opt/airflow/requirements.txt
+      - ./kafka_stream_dag.py:/opt/airflow/dags/kafka_stream_dag.py
+      - ./kafka_streaming_service.py:/opt/airflow/dags/kafka_streaming_service.py
     ports:
       - "8080:8080"
     healthcheck:
