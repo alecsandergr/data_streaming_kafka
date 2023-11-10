@@ -160,6 +160,12 @@ services:
       - SPARK_MODE=${SPARK_MODE}
       - SPARK_RPC_AUTHENTICATION_ENABLED=${SPARK_RPC_AUTHENTICATION_ENABLED}
       - SPARK_RPC_ENCRYPTION_ENABLED=${SPARK_RPC_ENCRYPTION_ENABLED}
+    volumes:
+      - ./:/home
+      - spark_data:/opt/bitnami/spark/data
+    networks:
+      - default
+      - kafka_network
 
 # volumes for data
 volumes:
